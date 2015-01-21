@@ -201,8 +201,8 @@ module.exports = Ember.Object.extend({
         type: 'GET'
       }, options);
 
-      return this.constructor.request(options, {}, this).then(function(data) {
-        this.setProperties(data);
+      return this.constructor.request(options, {}, this).then(function(model) {
+        this.setProperties(model.toData());
         return this;
       }.bind(this));
     }.bind(this));
@@ -368,6 +368,31 @@ module.exports = Ember.Object.extend({
       properties[key] = value;
       return properties;
     }.bind(this), {});
+  },
+
+  /**
+   * A list of non-computed keys. This will include properties set during
+   * a fetch or by using 'set'.
+   *
+   * @method dataKeys
+   * @return Array A list of non-computed attributes.
+   */
+  dataKeys: function() {
+    var computedKeys = ['primaryKey', 'originalProperties', 'dirtyProperties'];
+    computedKeys.concat(Ember.keys(Ember.Object.create()));
+    return Ember.keys(this).reject(function(key) {
+      return computedKeys.contains(key);
+    }, this);
+  }.property().volatile(),
+
+  /**
+   * Get and object representation of this instance with all non-computed
+   * properties. Similar to toObject, but with extended data.
+   * @method toData
+   * @return {Object} the plain object representation of this instance
+   */
+  toData: function() {
+    return this.getProperties(this.get('dataKeys'));
   },
 
   /**
