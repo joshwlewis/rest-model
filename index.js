@@ -430,11 +430,11 @@ var RestModel = module.exports = Ember.Object.extend({
         resolve(processedCache);
       }
 
-      $.ajax(ajaxOptions).then(function(data, responseText, jqXHR) {
+      $.ajax(ajaxOptions).then(function(data, _text, jqXHR) {
 
         if (processedCache && jqXHR.status === 304) {
           // Cache is valid, do nothing.
-          return;
+          return processedCache;
         }
 
         var processedResponse = self.processResponse(data, options);
